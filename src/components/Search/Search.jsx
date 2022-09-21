@@ -1,10 +1,29 @@
-import React, { useContext } from "react";
+import React, { useCallback, useContext, useRef, useState } from "react";
 import style from "./Search.module.scss";
 import { ReactComponent as CloseIcon } from "../../assets/img/close_pizza.svg";
 import { SearchContext } from "../../App";
-
+import debounce from "lodash.debounce";
 const Search = () => {
-  const { searchValue, setSearchValue } = useContext(SearchContext);
+  const [value, setValue] = useState("");
+  const { setSearchValue } = useContext(SearchContext);
+  const inputRef = useRef();
+
+  const onClickClear = () => {
+    setSearchValue("");
+    setValue("");
+    inputRef.current.focus();
+  };
+  const updateSearchValue = useCallback(
+    debounce((str) => {
+      setSearchValue(str);
+    }, 500),
+    []
+  );
+  const onChangeInput = (event) => {
+    setValue(event.target.value);
+    updateSearchValue(event.target.value);
+  };
+
   return (
     <div className={style.root}>
       <svg
@@ -36,17 +55,15 @@ const Search = () => {
         </g>
       </svg>
       <input
-        value={searchValue}
-        onChange={(event) => setSearchValue(event.target.value)}
+        ref={inputRef}
+        value={value}
+        onChange={(event) => onChangeInput(event)}
         className={style.input}
         placeholder="Поиск пиццы ..."
         type="text"
       />
-      {searchValue && (
-        <CloseIcon
-          onClick={() => setSearchValue("")}
-          className={style.closeIcon}
-        />
+      {value && (
+        <CloseIcon onClick={onClickClear} className={style.closeIcon} />
       )}
     </div>
   );
