@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import style from "./Search.module.scss";
 import { ReactComponent as CloseIcon } from "../../assets/img/close_pizza.svg";
-const Search = ({ searchValue, setSearchValue }) => {
+import { SearchContext } from "../../App";
+
+const Search = () => {
+  const { searchValue, setSearchValue } = useContext(SearchContext);
   return (
     <div className={style.root}>
       <svg
