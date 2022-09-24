@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Categories from "../components/Categories";
@@ -13,8 +13,8 @@ import {
   setCurrentPage,
   setFilters,
 } from "../redux/slices/filterSlice";
-import axios from "axios";
 import qs from "qs";
+import { fetchPizzas } from "../redux/slices/pizzaSlice";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -23,15 +23,15 @@ const Home = () => {
 
   const categoryId = useSelector((state) => state.filter.categoryId);
   const sortType = useSelector((state) => state.filter.sort.sortProperty);
+  const searchValue = useSelector((state) => state.filter.searchValue);
   const currentPage = useSelector((state) => state.filter.currentPage);
+  const { items, status } = useSelector((state) => state.pizza);
+
   const dispatch = useDispatch();
 
-  const [items, setItems] = useState([]);
-  const [isLoader, setIsLoader] = useState(true);
   const onChangePage = (number) => {
     dispatch(setCurrentPage(number));
   };
-  const { searchValue } = useContext(SearchContext);
 
   const pizzas = items
     .filter((pizza) => {
@@ -39,20 +39,19 @@ const Home = () => {
     })
     .map((pizza) => <PizzaBlock key={pizza.id} {...pizza} />);
 
-  const fetchPizzas = () => {
-    setIsLoader(true);
+  const getPizzas = async () => {
     const category = categoryId > 0 ? `category=${categoryId}` : "";
     const sortBy = sortType.replace("-", "");
     const search = searchValue ? `search=${searchValue}` : "";
-
-    axios
-      .get(
-        `https://632856a8a2e90dab7bddbdbc.mockapi.io/api/v1/items?page=${currentPage}&limit=4&${search}&${category}&sortBy=${sortBy}&order=asc`
-      )
-      .then((res) => {
-        setItems(res.data);
-        setIsLoader(false);
-      });
+    dispatch(
+      fetchPizzas({
+        category,
+        sortBy,
+        search,
+        currentPage,
+      })
+    );
+    window.scrollTo(0, 0);
   };
 
   useEffect(() => {
@@ -72,11 +71,7 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-    if (!isSearch.current) {
-      fetchPizzas();
-    }
-    isSearch.current = false;
+    getPizzas();
   }, [categoryId, sortType, searchValue, currentPage]);
 
   useEffect(() => {
@@ -102,7 +97,7 @@ const Home = () => {
       </div>
       <h2 className="content__title">Все пиццы</h2>
       <div className="content__items">
-        {isLoader
+        {status === "loading"
           ? [...new Array(6)].map((_, index) => (
               <PizzaBlockSkeleton key={index} />
             ))
