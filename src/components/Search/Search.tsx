@@ -1,13 +1,13 @@
 import React, { useCallback, useContext, useRef, useState } from "react";
 import style from "./Search.module.scss";
 import { ReactComponent as CloseIcon } from "../../assets/img/close_pizza.svg";
-import { SearchContext } from "../../App";
 import debounce from "lodash.debounce";
 import { useDispatch } from "react-redux";
 import { setSearchValue } from "../../redux/slices/filterSlice";
-const Search = () => {
+
+const Search: React.FC = () => {
   const [value, setValue] = useState("");
-  const inputRef = useRef();
+  const inputRef = useRef<HTMLInputElement>(null);
   const dispatch = useDispatch();
 
   const onClickClear = () => {

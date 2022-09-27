@@ -2,9 +2,25 @@ import React, { useState } from "react";
 import { addItem } from "../../redux/slices/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 
-const Index = ({ id, title, price, imageUrl, sizes, types }) => {
+type PizzaBlockProps = {
+  id: string;
+  title: string;
+  price: number;
+  imageUrl: string;
+  sizes: number[];
+  types: number[];
+};
+
+const Index: React.FC<PizzaBlockProps> = ({
+  id,
+  title,
+  price,
+  imageUrl,
+  sizes,
+  types,
+}) => {
   const dispatch = useDispatch();
-  const cartItem = useSelector((state) =>
+  const cartItem = useSelector((state: any) =>
     state.cart.items.find((obj) => obj.id === id)
   );
   const addCount = cartItem ? cartItem.count : 0;
