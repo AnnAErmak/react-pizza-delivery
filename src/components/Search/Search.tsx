@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useRef, useState } from "react";
+import React, {
+  ChangeEventHandler,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 import style from "./Search.module.scss";
 import { ReactComponent as CloseIcon } from "../../assets/img/close_pizza.svg";
 import debounce from "lodash.debounce";
@@ -21,7 +27,7 @@ const Search: React.FC = () => {
     }, 500),
     []
   );
-  const onChangeInput = (event) => {
+  const onChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
     updateSearchValue(event.target.value);
   };
