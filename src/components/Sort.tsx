@@ -4,7 +4,7 @@ import { setSort } from "../redux/slices/filterSlice";
 
 type SortItem = {
   name: string;
-  sortProperty: string;
+  sortProperty: "rating" | "title" | "price";
 };
 
 export const menuList: SortItem[] = [

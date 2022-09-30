@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Categories from "../components/Categories";
 import Sort from "../components/Sort";
@@ -7,13 +7,16 @@ import PizzaBlockSkeleton from "../components/PizzaBlock/Skeleton";
 import PizzaBlock from "../components/PizzaBlock";
 import Pagination from "../components/Pagination";
 import { menuList } from "../components/Sort";
-import {
+import FilterSlice, {
+  FilterSliceState,
   setCategoryId,
   setCurrentPage,
   setFilters,
+  SortItem,
 } from "../redux/slices/filterSlice";
 import qs from "qs";
 import { fetchPizzas } from "../redux/slices/pizzaSlice";
+import { useAppDispatch } from "../redux/store";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -26,7 +29,7 @@ const Home: React.FC = () => {
   const currentPage = useSelector((state: any) => state.filter.currentPage);
   const { items, status } = useSelector((state: any) => state.pizza);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onChangePage = (number) => {
     dispatch(setCurrentPage(number));
@@ -43,7 +46,6 @@ const Home: React.FC = () => {
     const sortBy = sortType.replace("-", "");
     const search = searchValue ? `search=${searchValue}` : "";
     dispatch(
-      //@ts-ignore: any
       fetchPizzas({
         category,
         sortBy,
@@ -58,7 +60,7 @@ const Home: React.FC = () => {
     if (window.location.search) {
       const params = qs.parse(window.location.search.substring(1));
       const sort = menuList.find(
-        (obj) => obj.sortProperty === params.sortProperty
+        (obj: SortItem) => obj.sortProperty === params.sortProperty
       );
       dispatch(
         setFilters({
@@ -84,7 +86,7 @@ const Home: React.FC = () => {
       navigate(`?${queryString}`);
     }
     isMounted.current = true;
-  }, [categoryId, sortType, currentPage]);
+  }, [categoryId, sortType, currentPage, navigate]);
 
   return (
     <>
